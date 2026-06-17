@@ -8,7 +8,7 @@ import { Language } from '../data';
 
 export const Navbar = () => {
   const { lang, setLang, t, dir } = useLanguage();
-  const { businessName, cuisine } = useDemo();
+  const { businessName, cuisine, isDemo } = useDemo();
   const [scrolled,     setScrolled]     = useState(false);
   const [mobileMenu,   setMobileMenu]   = useState(false);
   const [langSelector, setLangSelector] = useState(false);
@@ -34,7 +34,8 @@ export const Navbar = () => {
       animate={{ y: 0 }}
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={cn(
-        'fixed top-0 w-full z-50 transition-all duration-300 ease-in-out border-b border-transparent',
+        'fixed w-full z-50 transition-all duration-300 ease-in-out border-b border-transparent',
+        isDemo ? 'top-[36px]' : 'top-0',
         scrolled
           ? 'bg-dark-600/92 backdrop-blur-xl border-white/5 py-3 shadow-lg shadow-black/30'
           : 'bg-transparent py-5',
