@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { LanguageProvider } from './lib/LanguageContext';
 import { DemoProvider, useDemo } from './lib/DemoContext';
 import { Navbar } from './components/Navbar';
@@ -9,58 +9,105 @@ import { Reservation } from './components/Reservation';
 import { Footer } from './components/Footer';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 
-// Height of the demo banner in px — keep in sync with the banner padding/font
-const BANNER_H = 40;
-
+// ─── Animated scrolling ticker banner ────────────────────────────────────────
 function DemoBanner() {
-  const { isDemo, businessName } = useDemo();
+  const { isDemo, businessName, city } = useDemo();
   if (!isDemo) return null;
 
+  const items = [
+    `🔒 DEMO PREVIEW`,
+    `📍 ${businessName}`,
+    `🏙️ ${city}`,
+    `✨ This site is not live yet`,
+    `💬 Contact us to publish it`,
+    `🚀 Your brand. Your images. Live in 24h.`,
+  ];
+
+  // Duplicate for seamless loop
+  const ticker = [...items, ...items, ...items];
+
   return (
-    <div style={{
-      position : 'fixed',
-      top      : 0,
-      left     : 0,
-      right    : 0,
-      zIndex   : 9999,
-      height   : `${BANNER_H}px`,
-      display  : 'flex',
-      alignItems : 'center',
-      justifyContent : 'center',
-      gap      : '8px',
-      background : '#854d0e',          // dark amber — readable, professional
-      borderBottom : '1px solid #a16207',
-      color    : '#fef9c3',
-      fontSize : '11px',
-      fontWeight : 600,
-      letterSpacing : '0.08em',
-      textTransform : 'uppercase',
-      padding  : '0 16px',
-      whiteSpace : 'nowrap',
-      overflow : 'hidden',
-    }}>
-      <span style={{ opacity: 0.6 }}>🔒</span>
-      <span>Demo preview</span>
-      <span style={{ opacity: 0.4, margin: '0 4px' }}>—</span>
-      <span style={{ color: '#fde68a', maxWidth: '55vw', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-        {businessName}
-      </span>
-      <span style={{ opacity: 0.4, margin: '0 4px' }}>—</span>
-      <span style={{ opacity: 0.85 }}>Site not live yet · Contact us</span>
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 9999,
+        background: 'linear-gradient(90deg, #92400e 0%, #b45309 40%, #d97706 60%, #92400e 100%)',
+        height: '36px',
+        overflow: 'hidden',
+        display: 'flex',
+        alignItems: 'center',
+        borderBottom: '1px solid rgba(255,200,80,0.25)',
+      }}
+    >
+      {/* Fade masks on edges */}
+      <div
+        style={{
+          position: 'absolute', left: 0, top: 0, bottom: 0, width: 80,
+          background: 'linear-gradient(to right, #92400e, transparent)',
+          zIndex: 2, pointerEvents: 'none',
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute', right: 0, top: 0, bottom: 0, width: 80,
+          background: 'linear-gradient(to left, #92400e, transparent)',
+          zIndex: 2, pointerEvents: 'none',
+        }}
+      />
+
+      {/* Ticker track */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          animation: 'tickerScroll 28s linear infinite',
+          whiteSpace: 'nowrap',
+          willChange: 'transform',
+        }}
+      >
+        {ticker.map((item, i) => (
+          <span
+            key={i}
+            style={{
+              padding: '0 32px',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
+              color: '#1c1917',
+              textTransform: 'uppercase',
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 10,
+            }}
+          >
+            {item}
+            <span style={{ opacity: 0.4, fontSize: 8 }}>◆</span>
+          </span>
+        ))}
+      </div>
+
+      <style>{`
+        @keyframes tickerScroll {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-33.333%); }
+        }
+      `}</style>
     </div>
   );
 }
 
+// ─── Main layout ─────────────────────────────────────────────────────────────
 function MainApp() {
   const { isDemo } = useDemo();
-
   return (
-    // When demo banner is shown, push ALL content down by banner height
-    // so nothing is hidden underneath it
     <div
       className="min-h-screen relative selection:bg-brand-500/30 selection:text-brand-400 font-sans font-light bg-dark-600"
-      style={isDemo ? { marginTop: `${BANNER_H}px` } : {}}
+      style={isDemo ? { paddingTop: '36px' } : {}}
     >
+      <DemoBanner />
       <Navbar />
       <main>
         <Hero />
@@ -78,8 +125,6 @@ export default function App() {
   return (
     <DemoProvider>
       <LanguageProvider>
-        {/* Banner sits outside the pushed-down wrapper so it stays fixed at top */}
-        <DemoBanner />
         <MainApp />
       </LanguageProvider>
     </DemoProvider>
