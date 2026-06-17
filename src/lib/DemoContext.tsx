@@ -26,8 +26,8 @@ const DEFAULT_IMAGES: DemoImages = {
 
 const DemoContext = createContext<DemoConfig>({
   businessName: 'BASTA',
-  city: 'Doha',
-  phone: '97450001866',
+  city: 'Dammam',
+  phone: '96650001866',
   isDemo: false,
   images: DEFAULT_IMAGES,
   cuisine: 'Authentic Cuisine',
@@ -58,8 +58,8 @@ export const DemoProvider = ({ children }: { children: React.ReactNode }) => {
 
     return {
       businessName: name ? name.toUpperCase() : 'BASTA',
-      city:         city     ?? 'Doha',
-      phone:        phone    ?? '97450001866',
+      city:         city     ?? 'Dammam',
+      phone:        phone    ?? '96650001866',
       cuisine:      cuisine  ?? 'Authentic Cuisine',
       instagram,
       isDemo: !!(name || city || phone || heroImg || about1Img),

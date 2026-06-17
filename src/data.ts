@@ -31,7 +31,7 @@ export const menuData = [
   // Desserts
   {
     id: 1,
-    name: "Algaymat Basta",
+    name: "Algaymat ",
     desc: "Fried dough balls, sugar syrup and dates syrup.",
     price: 36.00,
     category: "desserts",

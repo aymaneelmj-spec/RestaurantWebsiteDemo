@@ -141,7 +141,7 @@ function MenuCard({ item }: { item: MenuItem }) {
             {item.name}
           </h3>
           <span className="text-brand-400 font-mono font-medium whitespace-nowrap bg-brand-500/10 px-2 py-1 rounded text-sm flex-shrink-0">
-            QAR {item.price.toFixed(2)}
+            SAR {item.price.toFixed(2)}
           </span>
         </div>
 

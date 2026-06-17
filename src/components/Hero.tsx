@@ -1,48 +1,100 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '../lib/LanguageContext';
-import { useDemo } from '../lib/DemoContext';
+import { useDemo, FALLBACK_IMAGE } from '../lib/DemoContext';
+
+/**
+ * Picks the best Google Maps photo size token based on the viewport.
+ * Google photo URLs accept &w= and &h= parameters.
+ * We inject the right size so mobile gets a smaller, faster image.
+ */
+function resizeGooglePhoto(url: string): string {
+  try {
+    // Detect rough viewport category
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // Google Maps photo URLs look like:
+    //   https://lh3.googleusercontent.com/p/AF1Qip...=w1920-h1080
+    // OR they may not have size tokens at all.
+    // We strip existing size tokens and inject optimal ones.
+    const w = vw <= 480  ? 800
+            : vw <= 1024 ? 1400
+            :              1920;
+    const h = vh <= 700  ? 900
+            : vh <= 1080 ? 1200
+            :              1080;
+
+    // Replace existing =w...-h... or =s... token
+    if (url.includes('googleusercontent.com') || url.includes('googleapis.com')) {
+      // Remove any trailing size token  (=w..., =s..., =h...)
+      const base = url.replace(/=[whs]\d+(-[whs]\d+)*$/, '');
+      return `${base}=w${w}-h${h}`;
+    }
+
+    // For Unsplash or other CDNs that support ?w= / &w=
+    if (url.includes('unsplash.com')) {
+      const u = new URL(url);
+      u.searchParams.set('w', String(w));
+      u.searchParams.set('h', String(h));
+      u.searchParams.set('fit', 'crop');
+      u.searchParams.set('auto', 'format');
+      u.searchParams.set('q', '80');
+      return u.toString();
+    }
+  } catch {
+    // Any parse error — return as-is
+  }
+  return url;
+}
 
 export const Hero = () => {
   const { t } = useLanguage();
-  const { images, cuisine } = useDemo();
+  const { heroImage } = useDemo();
   const { scrollY } = useScroll();
-  const y = useTransform(scrollY, [0, 1000], [0, 400]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  const y       = useTransform(scrollY, [0, 1000], [0, 400]);
+  const opacity = useTransform(scrollY, [0, 500],  [1, 0]);
+
+  // Determine the image source: URL param → fallback
+  const rawSrc = heroImage ?? '/mainBackground.jpg';
+
+  // For Google / known CDN images, inject optimal size
+  const optimisedSrc = heroImage ? resizeGooglePhoto(heroImage) : rawSrc;
+
+  const [src, setSrc] = useState(optimisedSrc);
 
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-dark-600">
 
-      {/* Background Image & Parallax Effect */}
-      <motion.div
-        style={{ y, opacity }}
-        className="absolute inset-0 w-full h-full"
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-600/60 via-dark-600/40 to-dark-600 z-10"></div>
+      {/* Background Image with parallax */}
+      <motion.div style={{ y, opacity }} className="absolute inset-0 w-full h-full">
+        <div className="absolute inset-0 bg-gradient-to-b from-dark-600/55 via-dark-600/35 to-dark-600 z-10" />
         <img
-          src={images.hero}
-          alt="Restaurant Atmosphere"
+          key={src}
+          src={src}
+          alt="Restaurant atmosphere"
           className="w-full h-full object-cover object-center scale-105"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src =
-              'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop';
+          style={{ objectPosition: 'center 30%' }}
+          onError={() => {
+            // If optimised URL fails, try original; then fallback
+            if (src !== rawSrc)        { setSrc(rawSrc); return; }
+            if (src !== FALLBACK_IMAGE) { setSrc(FALLBACK_IMAGE); }
           }}
         />
       </motion.div>
 
-      {/* Floating Ambient Light */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none"></div>
+      {/* Ambient glow */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-500/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-20 text-center px-4 max-w-4xl mx-auto mt-20">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
+          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
         >
           <p className="text-brand-400 text-sm md:text-base font-medium tracking-[0.3em] uppercase mb-6 drop-shadow-md">
-            {/* Use cuisine from URL param if provided, else fall back to translation */}
-            {cuisine !== 'Authentic Cuisine' ? cuisine : t.hero.subtitle}
+            {t.hero.subtitle}
           </p>
         </motion.div>
 
@@ -79,9 +131,9 @@ export const Hero = () => {
         <div className="w-[1px] h-12 bg-white/20 overflow-hidden relative">
           <motion.div
             animate={{ top: ['-100%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
             className="absolute top-0 w-full h-1/2 bg-brand-400"
-          ></motion.div>
+          />
         </div>
       </motion.div>
     </section>
