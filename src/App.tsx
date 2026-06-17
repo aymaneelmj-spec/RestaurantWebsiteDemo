@@ -1,10 +1,6 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import React, { useEffect } from 'react';
-import { LanguageProvider, useLanguage } from './lib/LanguageContext';
+import React from 'react';
+import { LanguageProvider } from './lib/LanguageContext';
+import { DemoProvider, useDemo } from './lib/DemoContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -13,11 +9,29 @@ import { Reservation } from './components/Reservation';
 import { Footer } from './components/Footer';
 import { WhatsAppWidget } from './components/WhatsAppWidget';
 
-function MainApp() {
-  const { dir } = useLanguage();
-
+function DemoBanner() {
+  const { isDemo, businessName } = useDemo();
+  if (!isDemo) return null;
   return (
-    <div className="min-h-screen relative selection:bg-brand-500/30 selection:text-brand-400 font-sans font-light bg-dark-600">
+    <div style={{
+      position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999,
+      background: '#ca8a04', color: '#1c1917',
+      textAlign: 'center', padding: '7px 16px',
+      fontSize: '12px', fontWeight: 600, letterSpacing: '0.06em',
+    }}>
+      🔒 DEMO PREVIEW — {businessName} — This site is not live yet. Contact us to get it.
+    </div>
+  );
+}
+
+function MainApp() {
+  const { isDemo } = useDemo();
+  return (
+    <div
+      className="min-h-screen relative selection:bg-brand-500/30 selection:text-brand-400 font-sans font-light bg-dark-600"
+      style={isDemo ? { paddingTop: '34px' } : {}}
+    >
+      <DemoBanner />
       <Navbar />
       <main>
         <Hero />
@@ -33,9 +47,10 @@ function MainApp() {
 
 export default function App() {
   return (
-    <LanguageProvider>
-      <MainApp />
-    </LanguageProvider>
+    <DemoProvider>
+      <LanguageProvider>
+        <MainApp />
+      </LanguageProvider>
+    </DemoProvider>
   );
 }
-
