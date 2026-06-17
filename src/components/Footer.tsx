@@ -5,12 +5,18 @@ import { MapPin, Phone, Instagram } from 'lucide-react';
 
 export const Footer = () => {
   const { t } = useLanguage();
-  const { businessName, city, phone } = useDemo();
+  const { businessName, city, phone, instagram, cuisine } = useDemo();
 
   // Format phone for display: e.g. 97455001234 → +974 5500 1234
   const displayPhone = phone.startsWith('974')
     ? `+974 ${phone.slice(3, 7)} ${phone.slice(7)}`
+    : phone.startsWith('966')
+    ? `+966 ${phone.slice(3, 5)} ${phone.slice(5, 9)} ${phone.slice(9)}`
     : `+${phone}`;
+
+  const instagramUrl = instagram
+    ? `https://instagram.com/${instagram}`
+    : '#';
 
   return (
     <footer className="bg-[#121214] pt-24 pb-12 border-t border-white/5 relative overflow-hidden">
@@ -20,14 +26,23 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
 
           <div className="flex flex-col items-center md:items-start text-center md:text-left">
-            <span className="font-serif text-3xl tracking-widest text-brand-500 font-bold mb-4 drop-shadow-sm">
+            <span className="font-serif text-3xl tracking-widest text-brand-500 font-bold mb-1 drop-shadow-sm">
               {businessName}
             </span>
+            {cuisine && (
+              <span className="text-[11px] uppercase tracking-[0.2em] text-gray-500 mb-4">{cuisine}</span>
+            )}
             <p className="text-gray-500 text-sm max-w-xs">
-              Authentic Qatari cuisine served in a luxurious, modern atmosphere. Experience the true taste of tradition.
+              {cuisine ?? 'Authentic'} served in a luxurious, modern atmosphere. Experience the true taste of tradition.
             </p>
             <div className="flex gap-4 mt-6">
-              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-brand-400 hover:border-brand-400 transition-all">
+              <a
+                href={instagramUrl}
+                target={instagram ? '_blank' : undefined}
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-brand-400 hover:border-brand-400 transition-all"
+                aria-label="Instagram"
+              >
                 <Instagram className="w-4 h-4" />
               </a>
             </div>
@@ -35,15 +50,18 @@ export const Footer = () => {
 
           <div className="flex flex-col justify-center items-center text-center">
             <h4 className="text-white font-serif text-xl mb-6">Contact</h4>
-            <div className="flex items-center gap-3 text-gray-400 mb-4 hover:text-brand-400 transition-colors">
+            <a
+              href={`https://wa.me/${phone}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 text-gray-400 mb-4 hover:text-brand-400 transition-colors"
+            >
               <Phone className="w-4 h-4 text-brand-500" />
               <span>{displayPhone}</span>
-            </div>
+            </a>
             <div className="flex items-start gap-3 text-gray-400 hover:text-brand-400 transition-colors">
               <MapPin className="w-4 h-4 text-brand-500 mt-1" />
-              <div className="max-w-[200px]">
-                {city}, Qatar
-              </div>
+              <div className="max-w-[200px]">{city}</div>
             </div>
           </div>
 

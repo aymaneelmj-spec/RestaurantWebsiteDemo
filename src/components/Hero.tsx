@@ -1,29 +1,31 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useLanguage } from '../lib/LanguageContext';
+import { useDemo } from '../lib/DemoContext';
 
 export const Hero = () => {
   const { t } = useLanguage();
+  const { images, cuisine } = useDemo();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 1000], [0, 400]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center overflow-hidden bg-dark-600">
-      
+
       {/* Background Image & Parallax Effect */}
-      <motion.div 
+      <motion.div
         style={{ y, opacity }}
         className="absolute inset-0 w-full h-full"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-dark-600/60 via-dark-600/40 to-dark-600 z-10"></div>
-        <img 
-          src="/mainBackground.jpg" 
-          alt="Basta Restaurant Atmosphere" 
+        <img
+          src={images.hero}
+          alt="Restaurant Atmosphere"
           className="w-full h-full object-cover object-center scale-105"
           onError={(e) => {
-            // Fallback luxury texture if image not uploaded yet
-            (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop";
+            (e.target as HTMLImageElement).src =
+              'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=2070&auto=format&fit=crop';
           }}
         />
       </motion.div>
@@ -36,14 +38,15 @@ export const Hero = () => {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+          transition={{ duration: 1, delay: 0.2, ease: 'easeOut' }}
         >
           <p className="text-brand-400 text-sm md:text-base font-medium tracking-[0.3em] uppercase mb-6 drop-shadow-md">
-            {t.hero.subtitle}
+            {/* Use cuisine from URL param if provided, else fall back to translation */}
+            {cuisine !== 'Authentic Cuisine' ? cuisine : t.hero.subtitle}
           </p>
         </motion.div>
 
-        <motion.h1 
+        <motion.h1
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
@@ -53,12 +56,12 @@ export const Hero = () => {
         </motion.h1>
 
         <motion.div
-           initial={{ opacity: 0, y: 20 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ duration: 1, delay: 0.8 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.8 }}
         >
-          <a 
-            href="#menu" 
+          <a
+            href="#menu"
             className="inline-flex items-center justify-center px-8 py-4 bg-brand-500 text-white font-semibold tracking-widest uppercase text-sm rounded-none hover:bg-brand-400 transition-all duration-300 hover:scale-105"
           >
             {t.hero.cta}
@@ -67,16 +70,16 @@ export const Hero = () => {
       </div>
 
       {/* Scroll indicator */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5, duration: 1 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
       >
         <div className="w-[1px] h-12 bg-white/20 overflow-hidden relative">
-          <motion.div 
+          <motion.div
             animate={{ top: ['-100%', '100%'] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: 'linear' }}
             className="absolute top-0 w-full h-1/2 bg-brand-400"
           ></motion.div>
         </div>

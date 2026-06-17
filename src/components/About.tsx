@@ -1,9 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useLanguage } from '../lib/LanguageContext';
+import { useDemo } from '../lib/DemoContext';
 
 export const About = () => {
   const { t } = useLanguage();
+  const { images } = useDemo();
 
   return (
     <section id="story" className="py-32 bg-dark-600 relative overflow-hidden">
@@ -11,46 +13,54 @@ export const About = () => {
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-brand-400/5 rounded-full blur-[150px]"></div>
 
       <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        
+
         {/* Images Parallax-style Grid */}
         <div className="grid grid-cols-2 gap-4 relative">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8 }}
             className="col-span-1 pt-12"
           >
-            <img 
-              src="https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070&auto=format&fit=crop" 
-              alt="Restaurant detail" 
-              className="w-full h-80 object-cover rounded-xl filter hover:brightness-110 transition-all duration-700" 
+            <img
+              src={images.about1}
+              alt="Restaurant detail"
+              className="w-full h-80 object-cover rounded-xl filter hover:brightness-110 transition-all duration-700"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  'https://images.unsplash.com/photo-1544148103-0773bf10d330?q=80&w=2070&auto=format&fit=crop';
+              }}
             />
           </motion.div>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: '-100px' }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="col-span-1"
           >
-            <img 
-              src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop" 
-              alt="Culinary prep" 
-              className="w-full h-96 object-cover rounded-xl filter hover:brightness-110 transition-all duration-700" 
+            <img
+              src={images.about2}
+              alt="Culinary prep"
+              className="w-full h-96 object-cover rounded-xl filter hover:brightness-110 transition-all duration-700"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src =
+                  'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop';
+              }}
             />
           </motion.div>
-          
+
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-dark-600/80 backdrop-blur-md p-6 rounded-full border border-brand-500/20 shadow-2xl">
             <span className="font-serif text-3xl text-brand-400 font-bold">Est.</span>
           </div>
         </div>
 
         {/* Story Text */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 50 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8 }}
           className="lg:pl-12"
         >
